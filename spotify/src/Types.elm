@@ -2,9 +2,15 @@ module Types (..) where
 
 
 type alias Answer =
-  { name : String
+  { name : String,
+    covers : List Cover
   }
 
+type alias Cover = 
+  { url : String,
+    height : Int,
+    width : Int
+  }
 
 type alias Model =
   { query : String

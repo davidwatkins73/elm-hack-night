@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Signal exposing (message, forwardTo, Address)
 import Types exposing (..)
-
+import Debug
 
 root : Signal.Address Action -> Model -> Html
 root address model =
@@ -51,9 +51,33 @@ resultView answer =
         [ class "panel-body"
         , style [ ( "height", "10rem" ) ]
         ]
-        [ text answer.name ]
+        [ h4
+            []
+            [ text answer.name 
+            , br [] []  
+            , toCover answer.covers
+            ]
+        ]
     ]
 
+
+toCover: List Cover -> Html  
+toCover covers =
+  let 
+    cover = List.head (List.reverse covers) 
+  in
+    case cover of
+      Just c -> 
+        img
+        [ src c.url
+        , height 50
+        , width 50
+        ]
+        []
+      Nothing ->
+        text "Nothing"
+  
+       
 
 
 -- Bootstrap.
