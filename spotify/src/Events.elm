@@ -1,4 +1,4 @@
-module Events (onInput, onEnter) where
+module Events (onInput, onEnter, onChange) where
 
 {-| Extensions to the Html.Events library.
 
@@ -30,3 +30,8 @@ is13 code =
 onInput : Address a -> (String -> a) -> Html.Attribute
 onInput address f =
   on "input" targetValue (message (forwardTo address f))
+
+
+onChange : Address a -> (String -> a) -> Html.Attribute
+onChange address f =
+  on "change" targetValue (message (forwardTo address f))

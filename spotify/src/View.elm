@@ -1,8 +1,9 @@
 module View (root) where
 
-import Events exposing (onInput, onEnter)
+import Events exposing (onInput, onChange, onEnter)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (on)
 import Signal exposing (message, forwardTo, Address)
 import Types exposing (..)
 import Debug
@@ -20,14 +21,43 @@ root address model =
 
 
 inputForm address queryParams =
-  input
-    [ type' "text"
-    , placeholder "Search..."
-    , value queryParams.query
-    , onInput address QueryChange
-    , onEnter address Query
-    ]
-    []
+  let
+    queryBox = 
+      input
+        [ type' "text"
+        , placeholder "Search..."
+        , value queryParams.query
+        , onInput address QueryChange
+        , onEnter address Query
+        ]
+        []
+    queryType = 
+      div 
+        [] 
+        [ kindCheckbox queryParams.kind Artist "Artist" address
+        , kindCheckbox queryParams.kind Album "Album" address
+        ]
+  in 
+    div 
+      []
+      [ queryBox
+      , queryType
+      ]
+      
+        
+kindCheckbox : Kind -> Kind -> String -> Signal.Address Action -> Html
+kindCheckbox currentKind checkedKind label address = 
+    div 
+      [] 
+      [ input
+          [ name "kind" 
+          , type' "radio"
+          , checked (currentKind == checkedKind)
+          , onChange address (\_ -> KindChange checkedKind)  
+          ]
+          []
+      , text label
+      ]
 
 
 resultsList address answers =

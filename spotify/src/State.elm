@@ -17,7 +17,7 @@ init : ( Model, Effects Action )
 init =
   ( { queryParams = 
       { query = ""
-      , kind = Artist
+      , kind = Album
       }
     , answers = []
     }
@@ -29,17 +29,15 @@ update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     QueryChange q ->
-      let 
-         p = model.queryParams
-         p' = { p | query = q }
-      in  
-        ( { model | queryParams = p' }
-        , Effects.none
-        )
+      ( { model | queryParams = updateQuery q model.queryParams }
+      , Effects.none
+      )
         
-    KindChange _ -> 
-      ( model, Effects.none )
-
+    KindChange k -> 
+      ( { model | queryParams = updateKind k model.queryParams }
+      , Effects.none
+      )
+  
     Query ->
       ( model
       , Rest.search model.queryParams
@@ -49,3 +47,9 @@ update action model =
       ( { model | answers = (Maybe.withDefault [] maybeAnswers) }
       , Effects.none
       )
+
+updateKind : Kind -> QueryParams -> QueryParams
+updateKind k p = { p | kind = k }
+
+updateQuery : String -> QueryParams -> QueryParams
+updateQuery q p = { p | query = q }
