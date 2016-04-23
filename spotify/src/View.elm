@@ -13,31 +13,31 @@ root address model =
     [ style [ ( "margin", "20px 0" ) ] ]
     [ bootstrap
     , containerFluid
-        [ inputForm address model
-        , resultsList address model
+        [ inputForm address model.queryParams
+        , resultsList address model.answers
         ]
     ]
 
 
-inputForm address model =
+inputForm address queryParams =
   input
     [ type' "text"
-    , placeholder "Search for an album..."
-    , value model.query
+    , placeholder "Search..."
+    , value queryParams.query
     , onInput address QueryChange
     , onEnter address Query
     ]
     []
 
 
-resultsList address model =
+resultsList address answers =
   let
     toEntry answer =
       div
         [ class "col-xs-2 col-md-3" ]
         [ resultView answer ]
   in
-    row (List.map toEntry model.answers)
+    row (List.map toEntry answers)
 
 
 resultView : Answer -> Html
@@ -46,30 +46,30 @@ resultView answer =
     [ class "panel panel-info" ]
     [ div
         [ class "panel-heading" ]
-        [ text "Album" ]
+        [ text (toString answer.kind) ]
     , div
         [ class "panel-body"
-        , style [ ( "height", "10rem" ) ]
+        , style [ ( "height", "11rem" ) ]
         ]
-        [ h4
+        [ h5
             []
             [ text answer.name 
             , br [] []  
-            , toCover answer.covers
+            , toImage answer.images
             ]
         ]
     ]
 
 
-toCover: List Cover -> Html  
-toCover covers =
+toImage: List Image -> Html  
+toImage images =
   let 
-    cover = List.head (List.reverse covers) 
+    image = List.head (List.reverse images) 
   in
-    case cover of
-      Just c -> 
+    case image of
+      Just i -> 
         img
-        [ src c.url
+        [ src i.url
         , height 50
         , width 50
         ]
@@ -78,8 +78,6 @@ toCover covers =
         text "Nothing"
   
        
-
-
 -- Bootstrap.
 
 

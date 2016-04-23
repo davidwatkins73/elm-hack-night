@@ -15,7 +15,10 @@ import Rest
 
 init : ( Model, Effects Action )
 init =
-  ( { query = ""
+  ( { queryParams = 
+      { query = ""
+      , kind = Artist
+      }
     , answers = []
     }
   , Effects.none
@@ -25,14 +28,21 @@ init =
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
-    QueryChange newQuery ->
-      ( { model | query = newQuery }
-      , Effects.none
-      )
+    QueryChange q ->
+      let 
+         p = model.queryParams
+         p' = { p | query = q }
+      in  
+        ( { model | queryParams = p' }
+        , Effects.none
+        )
+        
+    KindChange _ -> 
+      ( model, Effects.none )
 
     Query ->
       ( model
-      , Rest.search model.query
+      , Rest.search model.queryParams
       )
 
     RegisterAnswers maybeAnswers ->

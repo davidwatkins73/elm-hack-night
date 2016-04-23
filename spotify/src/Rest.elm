@@ -11,36 +11,66 @@ import Signal exposing (message, forwardTo, Address)
 import Task
 import Types exposing (..)
 import Debug
+import String exposing (toLower)
 
 
-search : String -> Effects Action
-search query =
-  Http.get decodeAnswers (searchUrl query)
-    |> Task.toMaybe
-    |> Task.map RegisterAnswers
-    |> Effects.task
-
-
-searchUrl : String -> String
-searchUrl query =
-  Http.url
-    "https://api.spotify.com/v1/search"
-    [ ( "q", query )
-    , ( "type", "album" )
-    ]
-
-
-decodeAnswers : Decoder (List Answer)
-decodeAnswers =
-  let
-    cover = 
-        Decode.object3 Cover
-          ("url" := Decode.string)
-          ("height" := Decode.int)
-          ("width" := Decode.int)
-    album =
-        Decode.object2 Answer
-          ("name" := Decode.string)
-          ("images" := Decode.list cover)
+search : QueryParams -> Effects Action
+search params =
+  let 
+    decoder = 
+      kindToDecoder params.kind
   in
-    (Decode.at [ "albums", "items" ] (Decode.list album))
+    Http.get decoder (searchUrl params)
+      |> Task.toMaybe
+      |> Task.map RegisterAnswers
+      |> Effects.task
+
+
+searchUrl : QueryParams -> String
+searchUrl queryParams =
+  let 
+    typeStr = String.toLower (toString queryParams.kind)
+  in
+    Http.url
+      "https://api.spotify.com/v1/search"
+      [ ( "q", queryParams.query )
+      , ( "type", typeStr )
+      ]
+
+
+decodeImage : Decoder Image
+decodeImage =
+    Decode.object3 Image
+        ("url" := Decode.string)
+        ("height" := Decode.int)
+        ("width" := Decode.int)
+
+itemDecoder : Kind -> Decoder Answer
+itemDecoder kind = 
+    Decode.object3 Answer
+        ("name" := Decode.string)
+        ("images" := Decode.list decodeImage)
+        (Decode.succeed kind)
+              
+
+itemsDecoder : String -> Kind -> Decoder (List Answer)
+itemsDecoder key kind =
+  let 
+    item = itemDecoder kind
+  in
+    Decode.at
+        [ key, "items" ]
+        (Decode.list item)
+
+kindToDecoder : Kind -> Decoder (List Answer) 
+kindToDecoder kind = 
+  case kind of 
+    Artist -> 
+      itemsDecoder "artists" Artist
+    Album -> 
+      itemsDecoder "albums" Artist
+    Playlist -> 
+      itemsDecoder "playlists" Playlist
+    _ -> 
+      itemsDecoder "albums" Album
+      
