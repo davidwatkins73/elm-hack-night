@@ -6,7 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (on)
 import Signal exposing (message, forwardTo, Address)
 import Types exposing (..)
-import Debug
+
 
 root : Signal.Address Action -> Model -> Html
 root address model =
@@ -50,8 +50,10 @@ inputForm address queryParams =
       , hr [] []
       ]
       
+      
 newLine : Html
 newLine = br [] []
+      
         
 kindCheckbox : Kind -> Kind -> Signal.Address Action -> Html
 kindCheckbox currentKind checkedKind address = 

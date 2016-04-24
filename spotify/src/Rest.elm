@@ -2,15 +2,9 @@ module Rest (..) where
 
 import Effects exposing (Effects, Never)
 import Types exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
 import Http
-import Json.Decode as Decode exposing ((:=),Decoder)
-import Signal exposing (message, forwardTo, Address)
+import Json.Decode as Decode exposing ((:=), Decoder)
 import Task
-import Types exposing (..)
-import Debug
 import String exposing (toLower)
 
 
