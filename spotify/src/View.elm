@@ -41,6 +41,9 @@ inputForm address queryParams =
         , newLine
         , kindCheckbox queryParams.kind Album address
         , text "Albums"
+        , newLine
+        , kindCheckbox queryParams.kind Track address
+        , text "Tracks"
         ]
   in 
     div 
@@ -73,7 +76,7 @@ resultsList address answers =
   let
     toEntry answer =
       div
-        [ class "col-xs-2 col-md-3" ]
+        [ class "col-xs-3 col-md-4" ]
         [ resultView answer ]
   in
     row (List.map toEntry answers)
@@ -90,11 +93,14 @@ resultView answer =
         [ class "panel-body"
         , style [ ( "height", "11rem" ) ]
         ]
-        [ h5
-            []
-            [ text answer.name 
-            , br [] []  
-            , toImage answer.images
+        [ div
+            [class "row"]
+            [ div
+              [ class "col-sm-4" ]
+              [ toImage answer.images ]
+            , div
+              [ class "col-sm-8" ]
+              [ text answer.name ]
             ]
         ]
     ]

@@ -37,8 +37,8 @@ searchUrl queryParams =
       ]
 
 
-decodeImage : Decoder Image
-decodeImage =
+imageDecoder : Decoder Image
+imageDecoder =
     Decode.object3 Image
         ("url" := Decode.string)
         ("height" := Decode.int)
@@ -49,7 +49,7 @@ itemDecoder : Kind -> Decoder Answer
 itemDecoder kind = 
     Decode.object3 Answer
         ("name" := Decode.string)
-        ("images" := Decode.list decodeImage)
+        ("images" := Decode.list imageDecoder)
         (Decode.succeed kind)
               
               
@@ -63,6 +63,25 @@ itemsDecoder key kind =
         (Decode.list item)
 
 
+trackDecoder : Decoder Answer
+trackDecoder = 
+  let
+    defaultImage = Image 
+        "https://i.scdn.co/image/a81ea23339529ebef5d055f19b5d5d077795405d" 
+        50 
+        50
+  in
+    Decode.object3 Answer
+        ("name" := Decode.string)
+        (Decode.at ["album", "images"] (Decode.list imageDecoder))
+        (Decode.succeed Track)
+
+tracksDecoder : Decoder (List Answer)
+tracksDecoder =
+  Decode.at 
+      [ "tracks" , "items"]
+      (Decode.list trackDecoder)
+
 kindToDecoder : Kind -> Decoder (List Answer) 
 kindToDecoder kind = 
   case kind of 
@@ -72,6 +91,7 @@ kindToDecoder kind =
       itemsDecoder "albums" Album
     Playlist -> 
       itemsDecoder "playlists" Playlist
-    _ -> 
-      itemsDecoder "albums" Album
+    Track -> 
+      tracksDecoder
       
+--  "tracks" : {
