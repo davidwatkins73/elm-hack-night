@@ -14,16 +14,21 @@ import Debug
 import String exposing (toLower)
 
 
+-- unless the query string is empty initiate the search 
 search : QueryParams -> Effects Action
 search params =
   let 
     decoder = 
       kindToDecoder params.kind
   in
-    Http.get decoder (searchUrl params)
-      |> Task.toMaybe
-      |> Task.map RegisterAnswers
-      |> Effects.task
+    case params.query of 
+      "" -> 
+        Effects.none
+      _ ->  
+        Http.get decoder (searchUrl params)
+          |> Task.toMaybe
+          |> Task.map RegisterAnswers
+          |> Effects.task
 
 
 searchUrl : QueryParams -> String
@@ -45,6 +50,7 @@ decodeImage =
         ("height" := Decode.int)
         ("width" := Decode.int)
 
+
 itemDecoder : Kind -> Decoder Answer
 itemDecoder kind = 
     Decode.object3 Answer
@@ -52,7 +58,7 @@ itemDecoder kind =
         ("images" := Decode.list decodeImage)
         (Decode.succeed kind)
               
-
+              
 itemsDecoder : String -> Kind -> Decoder (List Answer)
 itemsDecoder key kind =
   let 
@@ -62,13 +68,14 @@ itemsDecoder key kind =
         [ key, "items" ]
         (Decode.list item)
 
+
 kindToDecoder : Kind -> Decoder (List Answer) 
 kindToDecoder kind = 
   case kind of 
     Artist -> 
       itemsDecoder "artists" Artist
     Album -> 
-      itemsDecoder "albums" Artist
+      itemsDecoder "albums" Album
     Playlist -> 
       itemsDecoder "playlists" Playlist
     _ -> 

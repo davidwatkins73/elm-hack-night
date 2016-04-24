@@ -34,9 +34,12 @@ update action model =
       )
         
     KindChange k -> 
-      ( { model | queryParams = updateKind k model.queryParams }
-      , Effects.none
-      )
+      let 
+        p' = updateKind k model.queryParams
+      in 
+        ( { model | queryParams = p' }
+        , Rest.search p'
+        )
   
     Query ->
       ( model

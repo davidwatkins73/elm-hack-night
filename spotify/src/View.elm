@@ -34,20 +34,28 @@ inputForm address queryParams =
     queryType = 
       div 
         [] 
-        [ kindCheckbox queryParams.kind Artist "Artist" address
-        , kindCheckbox queryParams.kind Album "Album" address
+        [ text "Search by:"
+        , newLine
+        , kindCheckbox queryParams.kind Artist address
+        , text "Artists"
+        , newLine
+        , kindCheckbox queryParams.kind Album address
+        , text "Albums"
         ]
   in 
     div 
       []
       [ queryBox
       , queryType
+      , hr [] []
       ]
       
+newLine : Html
+newLine = br [] []
         
-kindCheckbox : Kind -> Kind -> String -> Signal.Address Action -> Html
-kindCheckbox currentKind checkedKind label address = 
-    div 
+kindCheckbox : Kind -> Kind -> Signal.Address Action -> Html
+kindCheckbox currentKind checkedKind address = 
+    span 
       [] 
       [ input
           [ name "kind" 
@@ -56,7 +64,6 @@ kindCheckbox currentKind checkedKind label address =
           , onChange address (\_ -> KindChange checkedKind)  
           ]
           []
-      , text label
       ]
 
 
