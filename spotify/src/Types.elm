@@ -3,7 +3,8 @@ module Types (..) where
 type alias Answer =
   { name : String,
     images : List Image,
-    kind : Kind
+    kind : Kind,
+    preview: Maybe String
   }
 
 type alias Image = 

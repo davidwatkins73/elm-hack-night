@@ -47,10 +47,11 @@ imageDecoder =
 
 itemDecoder : Kind -> Decoder Answer
 itemDecoder kind = 
-    Decode.object3 Answer
+    Decode.object4 Answer
         ("name" := Decode.string)
         ("images" := Decode.list imageDecoder)
         (Decode.succeed kind)
+        (Decode.succeed Maybe.Nothing)
               
               
 itemsDecoder : String -> Kind -> Decoder (List Answer)
@@ -71,16 +72,19 @@ trackDecoder =
         50 
         50
   in
-    Decode.object3 Answer
+    Decode.object4 Answer
         ("name" := Decode.string)
         (Decode.at ["album", "images"] (Decode.list imageDecoder))
         (Decode.succeed Track)
+        (Decode.maybe ("preview_url" := Decode.string))
+
 
 tracksDecoder : Decoder (List Answer)
 tracksDecoder =
   Decode.at 
       [ "tracks" , "items"]
       (Decode.list trackDecoder)
+
 
 kindToDecoder : Kind -> Decoder (List Answer) 
 kindToDecoder kind = 
@@ -93,5 +97,4 @@ kindToDecoder kind =
       itemsDecoder "playlists" Playlist
     Track -> 
       tracksDecoder
-      
---  "tracks" : {
+  

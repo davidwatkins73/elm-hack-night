@@ -76,7 +76,7 @@ resultsList address answers =
   let
     toEntry answer =
       div
-        [ class "col-xs-3 col-md-4" ]
+        [ class "col-md-4 col-sm-4" ]
         [ resultView answer ]
   in
     row (List.map toEntry answers)
@@ -93,18 +93,36 @@ resultView answer =
         [ class "panel-body"
         , style [ ( "height", "11rem" ) ]
         ]
-        [ div
+        ([ div
             [class "row"]
             [ div
               [ class "col-sm-4" ]
               [ toImage answer.images ]
             , div
               [ class "col-sm-8" ]
-              [ text answer.name ]
+              [ div
+                []
+                [ text answer.name ] 
+              ]
             ]
-        ]
+        ] ++ (renderPreview answer.preview))
     ]
 
+
+renderPreview : Maybe String -> List Html
+renderPreview preview = 
+  case preview of 
+    Nothing -> 
+      []
+    Just p ->
+      [ audio
+        [ controls True]
+        [ br [] []
+        , source
+          [ src p ]
+          [] 
+        ]
+      ] 
 
 toImage: List Image -> Html  
 toImage images =
